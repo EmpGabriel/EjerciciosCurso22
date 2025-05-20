@@ -70,51 +70,89 @@
   Fecha de entrega: 19/05/2025
 */
 
-
+/**
+ * @file Simulador de combate entre personajes de un videojuego.
+ * @author [Gabriel Gutiérrez]
+ * @version 1.0.0
+ * @description Este script implementa un sistema básico de combate por turnos
+ * para personajes con diferentes clases (Guerrero, Mago, Arquero).
+ * Permite la creación de personajes, simula ataques basados en sus
+ * estadísticas y habilidades específicas de clase, y gestiona
+ * las rondas de combate hasta que solo quede un personaje en pie.
+ * Las estadísticas y las habilidades de ataque son aleatorias
+ * dentro de un rango definido por las propiedades del personaje.
+ * @license MIT
+ * @see {@link } para más información.
+ * @class personajes
+    * @property {string} nombre - Nombre del personaje.
+    * @property {number} vida - Vida del personaje.
+    * @property {number} ataque - Ataque del personaje.
+    * @property {number} defensa - Defensa del personaje.
+    * @property {number} velocidad - Velocidad del personaje.
+    * @method saludar - Saluda al personaje.
+    * @method atacar - Ataca a otro personaje.
+    * @method estaVivo - Verifica si el personaje está vivo.
+    * @method recibirDanio - Recibe daño y actualiza la vida.
+ * @method atacarconarma - Ataca con un arma (solo para guerreros).
+ * @method lanzarhechizo - Lanza un hechizo (solo para magos).
+ * @method dispararflecha - Dispara una flecha (solo para arqueros).
+ * @method jugar - Inicia el juego y permite a los personajes atacar.
+ * @method seleccionarObjetivo - Selecciona un objetivo aleatorio para atacar.
+ * @method obtenerOrdenTurnos - Obtiene el orden de turnos basado en la velocidad.
+ * @function atacar - Función para realizar un ataque entre dos personajes.
+ */
 
 class personajes {
-  constructor(nombre, vida, ataque, defensa, velocidad) {
-    this.nombre = nombre;
-    this.vida = vida;
-    this.ataque = ataque;
-    this.defensa = defensa;
-    this.velocidad = velocidad;
-  }
-
-  saludar() {
-    console.log(`Hola soy ${this.nombre}`);
-  }
-
-  atacar(objetivo) {
-    let ataque = Math.floor(Math.random() * this.ataque);
-    let defensa = Math.floor(Math.random() * objetivo.defensa);
-    let daño = ataque - defensa;
-
-    if (daño < 0) {
-      daño = 0;
+    constructor(nombre, vida, ataque, defensa, velocidad) {
+        this.nombre = nombre;
+        this.vida = vida;
+        this.ataque = ataque;
+        this.defensa = defensa;
+        this.velocidad = velocidad;
     }
 
-    objetivo.vida -= daño;
-
-    console.log(`${this.nombre} ataca a ${objetivo.nombre} y le hace ${daño} de daño`);
-  }
-  
-  estavivo() {
-    if (this.vida <= 0) {
-      console.log(`${this.nombre} ha muerto`);
-    } else {
-      console.log(`${this.nombre} sigue vivo`);
+    saludar() {
+        console.log(`Hola soy ${this.nombre}`);
     }
-  }
+
+    
+    atacar(objetivo) {
+        let ataque = Math.floor(Math.random() * this.ataque);
+        let defensa = Math.floor(Math.random() * objetivo.defensa);
+        let daño = ataque - defensa;
+
+        if (daño < 0) {
+            daño = 0;
+        }
+
+        objetivo.vida -= daño;
+
+        console.log(`${this.nombre} ataca a ${objetivo.nombre} y le hace ${daño} de daño`);
+    }
+
+    estaVivo() {
+        return this.vida > 0;
+    }
+
+    recibirDanio(cantidad) { 
+        this.vida -= cantidad;
+        if (this.vida < 0) {
+            this.vida = 0; 
+        }
+        console.log(`${this.nombre} recibe ${cantidad} de daño. Vida restante: ${this.vida}`);
+        if (this.vida <= 0) {
+            console.log(`${this.nombre} ha muerto.`);
+        }
+    }
 }
 
 class guerrero extends personajes {
-    constructror (nombre, vida, ataque, defensa, velocidad, armas){
+    constructor (nombre, vida, ataque, defensa, velocidad, armas){ 
         super(nombre, vida, ataque, defensa, velocidad);
         this.armas = armas;
     }
-    
-    atacarconarma(objetivo) {
+
+    atacarconarma() {
         const arma = this.armas[Math.floor(Math.random() * this.armas.length)];
         return arma;
     }
@@ -125,8 +163,8 @@ class mago extends personajes {
         super(nombre, vida, ataque, defensa, velocidad);
         this.hechizos = hechizos;
     }
-    
-    lanzarhechizo(objetivo) {
+
+    lanzarhechizo() { 
         const hechizo = this.hechizos[Math.floor(Math.random() * this.hechizos.length)];
         return hechizo;
     }
@@ -137,130 +175,150 @@ class arquero extends personajes {
         super(nombre, vida, ataque, defensa, velocidad);
         this.flechas = flechas;
     }
-    
-    dispararflecha(objetivo) {
+
+    dispararflecha() { 
         const flecha = this.flechas[Math.floor(Math.random() * this.flechas.length)];
+        return flecha;
     }
 }
 
 
-// se crean los personajes
-
-const personajes = [ 
-    new guerrero("Garen", 120, 60, 30, Math.floor(Math.random() * 10), [{ nombre: "Espada", daño: 30 }, { nombre: "Hacha", daño: 45 }]),
-    new guerrero("Sett", 110, 70, 35, Math.floor(Math.random() * 10), [{ nombre: "Martillo", daño: 50 }, { nombre: "Espada", daño: 30 }]),
-    new mago("Ryze", 100, 50, 20, Math.floor(Math.random() * 10), [{ nombre: "Fuego", daño: 65 }, { nombre: "Hielo", daño: 50 }]),
-    new mago("Brand", 100, 40, 25, Math.floor(Math.random() * 10), [{ nombre: "Rayo", daño: 60 }, { nombre: "Tierra", daño: 40 }]),
-    new arquero("Wind", 90, 45, 20, Math.floor(Math.random() * 10), [{ nombre: "Flecha de Fuego", daño: 35 }, { nombre: "Flecha de Hielo", daño: 40 }])
+const listaDePersonajes = [
+    new guerrero(
+        "Garen",
+        110,
+        60,
+        30,
+        Math.floor(Math.random() * 10),
+        [{ nombre: "Espada", daño: 30 }, { nombre: "Hacha", daño: 35 }]
+    ),
+    new guerrero(
+        "Sett",
+        105,
+        65,
+        35,
+        Math.floor(Math.random() * 10),
+        [{ nombre: "Martillo", daño: 40 }, { nombre: "Espada", daño: 30 }]
+    ),
+    new mago(
+        "Ryze",
+        94,
+        55,
+        20,
+        Math.floor(Math.random() * 10),
+        [{ nombre: "Fuego", daño: 65 }, { nombre: "Hielo", daño: 50 }]
+    ),
+    new mago(
+        "Brand",
+        93,
+        50,
+        25,
+        Math.floor(Math.random() * 10),
+        [{ nombre: "Rayo", daño: 70 }, { nombre: "Tierra", daño: 50 }]
+    ),
+    new arquero(
+        "Wind",
+        99,
+        49,
+        29,
+        Math.floor(Math.random() * 10),
+        [{ nombre: "Flecha de Fuego", daño: 55 }, { nombre: "Flecha de Hielo", daño: 48 }]
+    )
 ];
 
 
 function atacar(atacante, atacado) {
     if (!atacante.estaVivo() || !atacado.estaVivo()) return;
-    
+
     let danio = 0;
     let accionDescripcion = '';
+
     if (atacante instanceof mago) {
         const accion = Math.floor(Math.random() * 2);
         if (accion === 0) {
-            
             const ataqueRandom = Math.floor(Math.random() * atacante.ataque);
             const defensaRandom = Math.floor(Math.random() * atacado.defensa);
             danio = Math.max(0, ataqueRandom - defensaRandom);
             accionDescripcion = `ataca a`;
         } else {
-            
             const hechizo = atacante.lanzarhechizo();
             const defensaRandom = Math.floor(Math.random() * atacado.defensa);
             danio = Math.max(0, hechizo.daño - defensaRandom);
             accionDescripcion = `lanza el hechizo ${hechizo.nombre} a`;
         }
     } else if (atacante instanceof guerrero) {
-        const accion = Math.floor(Math.random() * 2); 
+        const accion = Math.floor(Math.random() * 2);
         if (accion === 0) {
-            
             const ataqueRandom = Math.floor(Math.random() * atacante.ataque);
             const defensaRandom = Math.floor(Math.random() * atacado.defensa);
             danio = Math.max(0, ataqueRandom - defensaRandom);
             accionDescripcion = `ataca a`;
         } else {
-            
-            const arma = atacante.atacarConArma();
+            const arma = atacante.atacarconarma(); 
             const defensaRandom = Math.floor(Math.random() * atacado.defensa);
             danio = Math.max(0, arma.daño - defensaRandom);
-            accionDescripcion = `ataca a ${atacado.nombre} con ${arma.nombre} y causa`;
+            accionDescripcion = `ataca con ${arma.nombre} a`; 
         }
     } else if (atacante instanceof arquero) {
-        const accion = Math.floor(Math.random() * 2); 
+        const accion = Math.floor(Math.random() * 2);
         if (accion === 0) {
-            
             const ataqueRandom = Math.floor(Math.random() * atacante.ataque);
             const defensaRandom = Math.floor(Math.random() * atacado.defensa);
             danio = Math.max(0, ataqueRandom - defensaRandom);
             accionDescripcion = `ataca a`;
         } else {
-            
             const flecha = atacante.dispararflecha();
             const defensaRandom = Math.floor(Math.random() * atacado.defensa);
             danio = Math.max(0, flecha.daño - defensaRandom);
             accionDescripcion = `dispara una ${flecha.nombre} a`;
         }
     } else {
-        
         const ataqueRandom = Math.floor(Math.random() * atacante.ataque);
         const defensaRandom = Math.floor(Math.random() * atacado.defensa);
         danio = Math.max(0, ataqueRandom - defensaRandom);
         accionDescripcion = `ataca a`;
     }
-    
-    if (accionDescripcion.includes('causa')) {
-        
-        console.log(`${atacante.nombre} ${accionDescripcion} ${atacado.nombre}. Daño causado: ${danio}.`);
-    } else {
-        console.log(`${atacante.nombre} ${accionDescripcion} ${atacado.nombre} y causa ${danio} de daño.`);
-    }
-    
+
+    console.log(`${atacante.nombre} ${accionDescripcion} ${atacado.nombre} y causa ${danio} de daño.`);
+
     atacado.recibirDanio(danio);
 }
 
 
-function seleccionarObjetivo(atacante, personajes) {
-    const posiblesObjetivos = personajes.filter(p => p.estaVivo() && p !== atacante);
+function seleccionarObjetivo(atacante, listaDePersonajes) { 
+    const posiblesObjetivos = listaDePersonajes.filter(p => p.estaVivo() && p !== atacante);
     if (posiblesObjetivos.length === 0) return null;
     return posiblesObjetivos[Math.floor(Math.random() * posiblesObjetivos.length)];
 }
 
-function obtenerOrdenTurnos(personajes) {
-    
-    const personajesVivos = personajes.filter(p => p.estaVivo());
+function obtenerOrdenTurnos(listaDePersonajes) { 
+    const personajesVivos = listaDePersonajes.filter(p => p.estaVivo());
     personajesVivos.sort((a, b) => {
         const numA = Math.floor(Math.random() * (a.velocidad + 1));
         const numB = Math.floor(Math.random() * (b.velocidad + 1));
-        return numB - numA; // descendente
+        return numB - numA; 
     });
     return personajesVivos;
 }
 
-// Loop del juego
 function jugar() {
     let ronda = 1;
-    while (personajes.filter(p => p.estaVivo()).length > 1) {
+    while (listaDePersonajes.filter(p => p.estaVivo()).length > 1) { 
         console.log(`\n--- Ronda ${ronda} ---`);
-        const orden = obtenerOrdenTurnos(personajes);
+        const orden = obtenerOrdenTurnos(listaDePersonajes); 
         for (const atacante of orden) {
             if (!atacante.estaVivo()) continue;
-            const objetivo = seleccionarObjetivo(atacante, personajes);
+            const objetivo = seleccionarObjetivo(atacante, listaDePersonajes); 
             if (!objetivo) {
-                
                 break;
             }
             atacar(atacante, objetivo);
-            
-            if (personajes.filter(p => p.estaVivo()).length <= 1) break;
+
+            if (listaDePersonajes.filter(p => p.estaVivo()).length <= 1) break; 
         }
         ronda++;
     }
-    const ganador = personajes.find(p => p.estaVivo());
+    const ganador = listaDePersonajes.find(p => p.estaVivo()); 
     if (ganador) {
         console.log(`\n¡El ganador es ${ganador.nombre}!`);
     } else {
@@ -268,5 +326,5 @@ function jugar() {
     }
 }
 
-personajes.forEach(p => p.saludar());
+listaDePersonajes.forEach(p => p.saludar()); 
 jugar();
