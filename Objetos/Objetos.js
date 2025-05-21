@@ -82,7 +82,7 @@
  * Las estadísticas y las habilidades de ataque son aleatorias
  * dentro de un rango definido por las propiedades del personaje.
  * @license MIT
- * @see {@link } para más información.
+ * @see {@link https://github.com/EmpGabriel/EjerciciosCurso22.git}
  * @class personajes
     * @property {string} nombre - Nombre del personaje.
     * @property {number} vida - Vida del personaje.
